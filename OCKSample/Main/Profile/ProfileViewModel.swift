@@ -87,9 +87,11 @@ final class TaskManagementViewModel: ObservableObject {
     @Published var title = ""
     @Published var instructions = ""
     @Published var scheduleTime = Date()
+    @Published private(set) var tasks: [ManagedTaskItem] = []
     @Published private(set) var statusMessage = ""
     @Published private(set) var hasError = false
     @Published private(set) var isProcessing = false
+    private var taskCache: [String: any OCKAnyTask] = [:]
 
     func createTask() async {
         guard !isProcessing else { return }
@@ -132,9 +134,78 @@ final class TaskManagementViewModel: ObservableObject {
             statusMessage = "Task added successfully."
             title = ""
             instructions = ""
+            await refreshTasks()
         } catch {
             hasError = true
             statusMessage = "Failed to add task: \(error.localizedDescription)"
+        }
+    }
+
+    func refreshTasks() async {
+        guard let store = AppDelegateKey.defaultValue?.store else {
+            hasError = true
+            statusMessage = "Care store is unavailable."
+            return
+        }
+
+        do {
+            var query = OCKTaskQuery(for: Date())
+            query.excludesTasksWithNoEvents = false
+            let fetchedTasks = try await store.fetchAnyTasks(query: query)
+
+            var nextTaskCache: [String: any OCKAnyTask] = [:]
+            let mappedTasks = fetchedTasks.map { task -> ManagedTaskItem in
+                nextTaskCache[task.id] = task
+                let rawTitle = task.title ?? ""
+                let displayTitle = rawTitle.isEmpty ? task.id : rawTitle
+                return ManagedTaskItem(
+                    id: task.id,
+                    title: displayTitle
+                )
+            }
+            taskCache = nextTaskCache
+            tasks = mappedTasks.sorted {
+                $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
+            }
+
+            if hasError {
+                hasError = false
+                statusMessage = ""
+            }
+        } catch {
+            hasError = true
+            statusMessage = "Failed to load tasks: \(error.localizedDescription)"
+        }
+    }
+
+    func deleteTask(id: String) async {
+        guard !isProcessing else { return }
+
+        guard let store = AppDelegateKey.defaultValue?.store else {
+            hasError = true
+            statusMessage = "Care store is unavailable."
+            return
+        }
+        guard let anyTask = taskCache[id], let task = anyTask as? OCKTask else {
+            hasError = true
+            statusMessage = "Task is unavailable for deletion."
+            return
+        }
+
+        isProcessing = true
+        defer { isProcessing = false }
+
+        do {
+            _ = try await store.deleteTask(task)
+            NotificationCenter.default.post(
+                .init(name: Notification.Name(rawValue: Constants.shouldRefreshView))
+            )
+            hasError = false
+            statusMessage = "Task deleted."
+            await refreshTasks()
+        } catch {
+            hasError = true
+            statusMessage = "Failed to delete task: \(error.localizedDescription)"
         }
     }
 
@@ -171,4 +242,9 @@ final class TaskManagementViewModel: ObservableObject {
         let shortUUID = UUID().uuidString.prefix(8).lowercased()
         return "\(sanitizedTitle)_\(shortUUID)"
     }
+}
+
+struct ManagedTaskItem: Identifiable {
+    let id: String
+    let title: String
 }

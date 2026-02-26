@@ -94,6 +94,9 @@ struct ProfileView: View {
         .onReceive(patients.publisher) { publishedPatient in
             viewModel.updatePatient(publishedPatient.result)
         }
+        .task {
+            await taskViewModel.refreshTasks()
+        }
     }
 
     static func query() -> OCKPatientQuery {
@@ -137,6 +140,37 @@ struct ProfileView: View {
                 Text(taskViewModel.statusMessage)
                     .font(.footnote)
                     .foregroundColor(taskViewModel.hasError ? .red : .green)
+            }
+
+            if taskViewModel.tasks.isEmpty {
+                Text("No tasks yet.")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(taskViewModel.tasks) { task in
+                    HStack(alignment: .top) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(task.title)
+                                .font(.body)
+                            Text(task.id)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Button(role: .destructive) {
+                            Task {
+                                await taskViewModel.deleteTask(id: task.id)
+                            }
+                        } label: {
+                            Text("Delete")
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(taskViewModel.isProcessing)
+                    }
+                    .padding(10)
+                    .background(Color(.systemBackground))
+                    .cornerRadius(10)
+                }
             }
         }
         .padding()
