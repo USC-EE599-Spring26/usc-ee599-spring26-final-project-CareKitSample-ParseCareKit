@@ -13,6 +13,7 @@ import CareKitUI
 import SwiftUI
 
 struct BioMeshAnimationStyle: OCKAnimationStyler {
-    var defaultAnimation: Animation? { .easeInOut(duration: 0.35) }
+    // CHANGE (1 required): duration 0.35 -> 0.45
+    var defaultAnimation: Animation? { .easeInOut(duration: 0.45) }
 }
 

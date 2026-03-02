@@ -14,16 +14,19 @@ import CareKitUI
 // BioMeshAnimationStyle  — motion        (edit OCKAnimationStyle.swift)
 // BioMeshAppearanceStyle — shadow / look (edit OCKAppearanceStyle.swift)
 struct Styler: OCKStyler {
-    var color: OCKColorStyler {
-        ColorStyler()
-    }
-    var dimension: OCKDimensionStyler {
-        OCKDimensionStyle()
-    }
-    var animation: OCKAnimationStyler {
-        BioMeshAnimationStyle()
-    }
-    var appearance: OCKAppearanceStyler {
-        BioMeshAppearanceStyle()
-    }
+
+    // CHANGE #1: shared instance
+    static let shared = Styler()
+
+    // CHANGE #2: store instances (instead of recreating each access)
+    private let bioColor = ColorStyler()
+    private let bioDimension = OCKDimensionStyle()
+    private let bioAnimation = BioMeshAnimationStyle()
+    private let bioAppearance = BioMeshAppearanceStyle()
+
+    // CHANGE #3: return stored stylers
+    var color: OCKColorStyler { bioColor }
+    var dimension: OCKDimensionStyler { bioDimension }
+    var animation: OCKAnimationStyler { bioAnimation }
+    var appearance: OCKAppearanceStyler { bioAppearance }
 }
