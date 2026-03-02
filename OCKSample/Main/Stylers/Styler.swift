@@ -8,6 +8,11 @@
 
 import CareKitUI
 
+// Styler wires together all four sub-stylers.
+// ColorStyler    — color palette         (edit ColorStyler.swift)
+// DimensionStyle — spacing / sizing      (edit OCKDimensionStyle.swift — already exists)
+// BioMeshAnimationStyle  — motion        (edit OCKAnimationStyle.swift)
+// BioMeshAppearanceStyle — shadow / look (edit OCKAppearanceStyle.swift)
 struct Styler: OCKStyler {
     var color: OCKColorStyler {
         ColorStyler()
@@ -16,9 +21,9 @@ struct Styler: OCKStyler {
         OCKDimensionStyle()
     }
     var animation: OCKAnimationStyler {
-        OCKAnimationStyle()
+        BioMeshAnimationStyle()
     }
     var appearance: OCKAppearanceStyler {
-        OCKAppearanceStyle()
+        BioMeshAppearanceStyle()
     }
 }

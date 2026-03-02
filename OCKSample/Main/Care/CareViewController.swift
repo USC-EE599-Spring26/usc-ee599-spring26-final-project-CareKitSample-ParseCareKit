@@ -165,8 +165,8 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         if isCurrentDay {
             if Calendar.current.isDate(date, inSameDayAs: Date()) {
                 // Add a non-CareKit view into the list
-                let tipTitle = "Benefits of exercising"
-                let tipText = "Learn how activity can promote a healthy pregnancy."
+                let tipTitle = "Caffeine & Your Health"
+                let tipText = "High caffeine intake (>400 mg/day) is linked to increased anxiety and disrupted sleep. Track your intake daily to find your personal patterns."
                 let tipView = TipView()
                 tipView.headerView.titleLabel.text = tipTitle
                 tipView.headerView.detailLabel.text = tipText
@@ -215,7 +215,16 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
             let orderedTasks = TaskID.ordered.compactMap { orderedTaskID in
                 tasks.first(where: { $0.id == orderedTaskID })
             }
-            return orderedTasks
+            // Also show any user-added tasks (not in the default ordered list)
+            let orderedIDs = Set(TaskID.ordered)
+            let userTasks = tasks
+                .filter { !orderedIDs.contains($0.id) }
+                .sorted {
+                    let a = ($0 as? OCKTask)?.title ?? $0.id
+                    let b = ($1 as? OCKTask)?.title ?? $1.id
+                    return a.localizedCaseInsensitiveCompare(b) == .orderedAscending
+                }
+            return orderedTasks + userTasks
         } catch {
             Logger.feed.error("Could not fetch tasks: \(error, privacy: .public)")
             return []
@@ -231,6 +240,8 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         query.taskIDs = [task.id]
 
         switch task.id {
+
+        // BioMesh default tasks
         case TaskID.steps:
             let card = EventQueryView<NumericProgressTaskView>(
                 query: query
@@ -239,7 +250,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 
             return [card]
 
-        case TaskID.ovulationTestResult:
+        case TaskID.sleepDuration:
             let card = EventQueryView<LabeledValueTaskView>(
                 query: query
             )
@@ -247,60 +258,70 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 
             return [card]
 
-        case TaskID.stretch:
-            let card = EventQueryView<InstructionsTaskView>(
-                query: query
-            )
-            .formattedHostingController()
-
-            return [card]
-
-        case TaskID.kegels:
-            /*
-             Since the kegel task is only scheduled every other day, there will be cases
-             where it is not contained in the tasks array returned from the query.
-             */
-            let card = EventQueryView<SimpleTaskView>(
-                query: query
-            )
-            .formattedHostingController()
-
-            return [card]
-
-        #if os(iOS)
-        // Create a card for the doxylamine task if there are events for it on this day.
-        case TaskID.doxylamine:
-
-            // This is a UIKit based card.
+        case TaskID.sleepHygiene:
+            #if os(iOS)
             let card = OCKChecklistTaskViewController(
                 query: query,
                 store: self.store
             )
-
             return [card]
-        #endif
+            #else
+            return []
+            #endif
 
-        case TaskID.nausea:
-
+        case TaskID.caffeineIntake, TaskID.waterIntake, TaskID.anxietyCheck:
             #if os(iOS)
-            /*
-             Also create a card (UIKit view) that displays a single event.
-             The event query passed into the initializer specifies that only
-             today's log entries should be displayed by this log task view controller.
-             */
-            let nauseaCard = OCKButtonLogTaskViewController(
+            let card = OCKButtonLogTaskViewController(
                 query: query,
                 store: self.store
             )
-
-            return [nauseaCard]
-
+            return [card]
             #else
             return []
             #endif
 
         default:
+            // User-added tasks: read card type from tags
+            return taskViewControllersForUserTask(task, query: query)
+        }
+    }
+
+    /// Routes user-added tasks to the correct card based on the "cardType:xxx" tag.
+    private func taskViewControllersForUserTask(
+        _ task: any OCKAnyTask,
+        query: OCKEventQuery
+    ) -> [UIViewController]? {
+        guard let tags = (task as? OCKTask)?.tags,
+              let match = tags.first(where: { $0.hasPrefix("cardType:") }) else {
+            // No tag set — fall back to instructions card so it always shows
+            return [OCKInstructionsTaskViewController(query: query, store: self.store)]
+        }
+        let cardType = String(match.dropFirst("cardType:".count))
+
+        switch cardType {
+        case "simple":
+            return [EventQueryView<SimpleTaskView>(query: query).formattedHostingController()]
+        case "instructions":
+            return [EventQueryView<InstructionsTaskView>(query: query).formattedHostingController()]
+        case "numericProgress":
+            return [EventQueryView<NumericProgressTaskView>(query: query).formattedHostingController()]
+        case "labeledValue":
+            return [EventQueryView<LabeledValueTaskView>(query: query).formattedHostingController()]
+        #if os(iOS)
+        case "checklist":
+            return [OCKChecklistTaskViewController(query: query, store: self.store)]
+        case "buttonLog":
+            return [OCKButtonLogTaskViewController(query: query, store: self.store)]
+        case "grid":
+            return [OCKGridTaskViewController(query: query, store: self.store)]
+        #else
+        case "checklist", "buttonLog", "grid":
+            return []
+        #endif
+        case "featuredContent":
             return nil
+        default:
+            return [OCKInstructionsTaskViewController(query: query, store: self.store)]
         }
     }
 

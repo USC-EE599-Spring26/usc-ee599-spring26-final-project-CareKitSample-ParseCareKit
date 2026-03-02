@@ -25,15 +25,17 @@ struct LoginView: View {
     @ObservedObject var viewModel: LoginViewModel
     @State var usersname = ""
     @State var password = ""
+    @State var email = ""
     @State var firstName: String = ""
     @State var lastName: String = ""
     @State var signupLoginSegmentValue = 0
 
     var body: some View {
         VStack {
-            // Change the title to the name of your application
-            Text("APP_NAME")
+            // App name
+            Text("BioMesh")
                 .font(.largeTitle)
+                .fontWeight(.bold)
                 .foregroundColor(.white)
                 .padding()
             // Change this image to something that represents your application
@@ -84,6 +86,15 @@ struct LoginView: View {
                         .background(.white)
                         .cornerRadius(20.0)
                         .shadow(radius: 10.0, x: 20, y: 10)
+
+                    TextField("EMAIL", text: $email)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
+                        .padding()
+                        .background(.white)
+                        .cornerRadius(20.0)
+                        .shadow(radius: 10.0, x: 20, y: 10)
                 default:
                     EmptyView()
                 }
@@ -99,12 +110,13 @@ struct LoginView: View {
                 case 1:
                     Task {
                         await viewModel.signup(
-							.patient,
-							username: usersname,
-							password: password,
-							firstName: firstName,
-							lastName: lastName
-						)
+                            .patient,
+                            username: usersname,
+                            password: password,
+                            email: email,
+                            firstName: firstName,
+                            lastName: lastName
+                        )
                     }
                 default:
                     Task {
