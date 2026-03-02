@@ -2,28 +2,35 @@
 //  ColorStyler.swift
 //  OCKSample
 //
-//  Created by Corey Baker on 10/16/21.
-//  Copyright © 2021 Network Reconnaissance Lab. All rights reserved.
+//  Created by Ray on 02/03/2026.
+//  Copyright © 2026 Network Reconnaissance Lab. All rights reserved.
 //
+
 
 import CareKitUI
 import SwiftUI
 import UIKit
 
-// TODO: Replace placeholder values with your chosen BioMesh color palette.
 struct ColorStyler: OCKColorStyler {
     #if os(iOS) || os(visionOS)
-    // TODO: Change 1: primary label color
+
+    // BioMesh Primary Label Color (Main Text)
     var label: UIColor {
-        FontColorKey.defaultValue
+        UIColor(red: 0.08, green: 0.18, blue: 0.25, alpha: 1.0) 
+        // Deep bio navy
     }
-    // TODO: Change 2: secondary label color
+
+    // BioMesh Secondary Label Color
     var secondaryLabel: UIColor {
-        UIColor.secondaryLabel
+        UIColor(red: 0.25, green: 0.40, blue: 0.45, alpha: 1.0)
+        // Muted blue-gray
     }
-    // TODO: Change 3: tertiary label / accent color
+
+    // BioMesh Accent / Highlight Color
     var tertiaryLabel: UIColor {
-        UIColor(Color.accentColor)
+        UIColor(red: 0.00, green: 0.60, blue: 0.55, alpha: 1.0)
+        // Teal accent (BioMesh main accent)
     }
+
     #endif
 }
