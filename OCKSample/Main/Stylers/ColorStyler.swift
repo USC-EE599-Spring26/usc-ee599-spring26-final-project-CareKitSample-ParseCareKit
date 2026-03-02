@@ -14,23 +14,30 @@ import UIKit
 struct ColorStyler: OCKColorStyler {
     #if os(iOS) || os(visionOS)
 
-    // BioMesh Primary Label Color (Main Text)
+    private var bioNavyLight: UIColor { UIColor(red: 0.08, green: 0.18, blue: 0.25, alpha: 1.0) }
+    private var bioNavyDark: UIColor  { UIColor(red: 0.85, green: 0.92, blue: 0.95, alpha: 1.0) }
+
+    private var bioSecondaryLight: UIColor { UIColor(red: 0.25, green: 0.40, blue: 0.45, alpha: 1.0) }
+    private var bioSecondaryDark: UIColor  { UIColor(red: 0.70, green: 0.78, blue: 0.82, alpha: 1.0) }
+
+    private var bioTeal: UIColor { UIColor(red: 0.00, green: 0.60, blue: 0.55, alpha: 1.0) }
+
+    // Primary label color
     var label: UIColor {
-        UIColor(red: 0.08, green: 0.18, blue: 0.25, alpha: 1.0) 
-        // Deep bio navy
+        UIColor { traits in
+            traits.userInterfaceStyle == .dark ? self.bioNavyDark : self.bioNavyLight
+        }
     }
 
-    // BioMesh Secondary Label Color
+    // Secondary label color
     var secondaryLabel: UIColor {
-        UIColor(red: 0.25, green: 0.40, blue: 0.45, alpha: 1.0)
-        // Muted blue-gray
+        UIColor { traits in
+            traits.userInterfaceStyle == .dark ? self.bioSecondaryDark : self.bioSecondaryLight
+        }
     }
 
-    // BioMesh Accent / Highlight Color
-    var tertiaryLabel: UIColor {
-        UIColor(red: 0.00, green: 0.60, blue: 0.55, alpha: 1.0)
-        // Teal accent (BioMesh main accent)
-    }
+    // Accent / tertiary
+    var tertiaryLabel: UIColor { bioTeal }
 
     #endif
 }
