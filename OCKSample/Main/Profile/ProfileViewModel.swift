@@ -9,6 +9,7 @@
 import CareKit
 import CareKitStore
 import CareKitEssentials
+import HealthKit
 import SwiftUI
 import os.log
 
@@ -82,19 +83,89 @@ class ProfileViewModel: ObservableObject {
     }
 }
 
+enum TaskCardStyle: String, CaseIterable, Identifiable {
+    case instructions
+    case simple
+    case buttonLog
+    case checklist
+    case featured
+    case grid
+    case link
+    case numericProgress
+    case labeledValue
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .instructions:
+            return "Instruction"
+        case .simple:
+            return "Simple"
+        case .buttonLog:
+            return "Button"
+        case .checklist:
+            return "Checklist"
+        case .featured:
+            return "Featured"
+        case .grid:
+            return "Grid"
+        case .link:
+            return "Link"
+        case .numericProgress:
+            return "Numeric Progress"
+        case .labeledValue:
+            return "Labeled Value"
+        }
+    }
+
+    static var creationOptions: [TaskCardStyle] {
+        [ .buttonLog, .checklist, .featured, .grid, .instructions, .labeledValue, .link, .numericProgress, .simple ]
+    }
+
+    var healthKitCompatibleStyle: TaskCardStyle {
+        switch self {
+        case .numericProgress, .labeledValue:
+            return self
+        default:
+            return .numericProgress
+        }
+    }
+}
+
+enum ManagedTaskType: Equatable {
+    case task
+    case healthKitTask
+    case unknown
+
+    var displayName: String {
+        switch self {
+        case .task:
+            return "Task"
+        case .healthKitTask:
+            return "HealthKitTask"
+        case .unknown:
+            return "Task"
+        }
+    }
+}
+
 @MainActor
 final class TaskManagementViewModel: ObservableObject {
     @Published var title = ""
     @Published var instructions = ""
     @Published var assetSymbol = "checkmark.circle"
+    @Published var selectedCardStyle: TaskCardStyle = .instructions
     @Published var scheduleTime = Date()
     @Published private(set) var tasks: [ManagedTaskItem] = []
     @Published private(set) var statusMessage = ""
     @Published private(set) var hasError = false
     @Published private(set) var isProcessing = false
     private var taskCache: [String: any OCKAnyTask] = [:]
+}
 
-    func createTask() async {
+extension TaskManagementViewModel {
+    func createCareTask() async {
         guard !isProcessing else { return }
 
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -114,47 +185,96 @@ final class TaskManagementViewModel: ObservableObject {
         defer { isProcessing = false }
 
         do {
-            let schedule = makeDailySchedule(time: scheduleTime)
-            let selectedAsset = sanitizeAssetSymbol(assetSymbol)
             var task = OCKTask(
                 id: makeTaskID(from: trimmedTitle),
                 title: trimmedTitle,
                 carePlanUUID: nil,
-                schedule: schedule
+                schedule: makeDailySchedule(time: scheduleTime)
             )
-            let trimmedInstructions = instructions.trimmingCharacters(in: .whitespacesAndNewlines)
-            if !trimmedInstructions.isEmpty {
-                task.instructions = trimmedInstructions
-            }
-            task.asset = selectedAsset
+            applySharedTaskConfiguration(
+                to: &task,
+                cardStyle: selectedCardStyle
+            )
             _ = try await store.addTask(task)
-
-            NotificationCenter.default.post(
-                .init(name: Notification.Name(rawValue: Constants.shouldRefreshView))
-            )
-            hasError = false
-            statusMessage = "Task added successfully."
-            title = ""
-            instructions = ""
-            assetSymbol = "checkmark.circle"
-            await refreshTasks()
+            await onCreateSucceeded(message: "Task added successfully.")
         } catch {
             hasError = true
             statusMessage = "Failed to add task: \(error.localizedDescription)"
         }
     }
 
+    func createHealthKitTask() async {
+        guard !isProcessing else { return }
+
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedTitle.isEmpty else {
+            hasError = true
+            statusMessage = "Task title is required."
+            return
+        }
+
+        guard let healthKitStore = AppDelegateKey.defaultValue?.healthKitStore else {
+            hasError = true
+            statusMessage = "HealthKit store is unavailable."
+            return
+        }
+
+        isProcessing = true
+        defer { isProcessing = false }
+
+        do {
+            let selectedStyle = selectedCardStyle
+            let effectiveStyle = selectedStyle.healthKitCompatibleStyle
+            var task = OCKHealthKitTask(
+                id: makeTaskID(from: trimmedTitle),
+                title: trimmedTitle,
+                carePlanUUID: nil,
+                schedule: makeDailySchedule(time: scheduleTime),
+                healthKitLinkage: healthKitLinkage(for: effectiveStyle)
+            )
+            applySharedTaskConfiguration(
+                to: &task,
+                cardStyle: effectiveStyle
+            )
+            _ = try await healthKitStore.addTasksIfNotPresent([task])
+
+            let status: String
+            if selectedStyle == effectiveStyle {
+                status = "HealthKitTask added successfully."
+            } else {
+                status = "HealthKitTask added. Card View changed to \(effectiveStyle.displayName)."
+            }
+            await onCreateSucceeded(message: status)
+        } catch {
+            hasError = true
+            statusMessage = "Failed to add HealthKitTask: \(error.localizedDescription)"
+        }
+    }
+
     func refreshTasks() async {
-        guard let store = AppDelegateKey.defaultValue?.store else {
+        guard let appDelegate = AppDelegateKey.defaultValue else {
+            hasError = true
+            statusMessage = "App delegate is unavailable."
+            return
+        }
+
+        guard let store = appDelegate.store else {
             hasError = true
             statusMessage = "Care store is unavailable."
             return
         }
 
+        let healthKitStore = appDelegate.healthKitStore
+
         do {
             var query = OCKTaskQuery(for: Date())
             query.excludesTasksWithNoEvents = false
-            let fetchedTasks = try await store.fetchAnyTasks(query: query)
+
+            var fetchedTasks = try await store.fetchAnyTasks(query: query)
+            if let healthKitStore {
+                let healthKitTasks = try await healthKitStore.fetchTasks(query: query)
+                fetchedTasks.append(contentsOf: healthKitTasks)
+            }
 
             var nextTaskCache: [String: any OCKAnyTask] = [:]
             let mappedTasks = fetchedTasks.map { task -> ManagedTaskItem in
@@ -170,10 +290,24 @@ final class TaskManagementViewModel: ObservableObject {
                     rawAsset = nil
                 }
                 let displayAsset = sanitizeAssetSymbol(rawAsset)
+                let userInfo = taskUserInfo(for: task)
+                let displayStyle = TaskCardStyle(
+                    rawValue: userInfo?[Constants.taskCardStyleKey] ?? ""
+                ) ?? .instructions
+                let displayTaskType: ManagedTaskType
+                if task is OCKHealthKitTask {
+                    displayTaskType = .healthKitTask
+                } else if task is OCKTask {
+                    displayTaskType = .task
+                } else {
+                    displayTaskType = .unknown
+                }
                 return ManagedTaskItem(
                     id: task.id,
                     title: displayTitle,
-                    assetSymbol: displayAsset
+                    assetSymbol: displayAsset,
+                    cardStyle: displayStyle,
+                    taskType: displayTaskType
                 )
             }
             taskCache = nextTaskCache
@@ -194,14 +328,19 @@ final class TaskManagementViewModel: ObservableObject {
     func deleteTask(id: String) async {
         guard !isProcessing else { return }
 
-        guard let store = AppDelegateKey.defaultValue?.store else {
+        guard let appDelegate = AppDelegateKey.defaultValue else {
+            hasError = true
+            statusMessage = "App delegate is unavailable."
+            return
+        }
+        guard let store = appDelegate.store else {
             hasError = true
             statusMessage = "Care store is unavailable."
             return
         }
         guard let anyTask = taskCache[id], let task = anyTask as? OCKTask else {
             hasError = true
-            statusMessage = "Task is unavailable for deletion."
+            statusMessage = "Only Task entries are deletable here."
             return
         }
 
@@ -222,7 +361,32 @@ final class TaskManagementViewModel: ObservableObject {
         }
     }
 
-    private func makeDailySchedule(time: Date) -> OCKSchedule {
+    func resetDraft() {
+        title = ""
+        instructions = ""
+        assetSymbol = "checkmark.circle"
+        selectedCardStyle = .instructions
+        scheduleTime = Date()
+        hasError = false
+        statusMessage = ""
+    }
+}
+
+private extension TaskManagementViewModel {
+    func onCreateSucceeded(message: String) async {
+        NotificationCenter.default.post(
+            .init(name: Notification.Name(rawValue: Constants.shouldRefreshView))
+        )
+        hasError = false
+        statusMessage = message
+        title = ""
+        instructions = ""
+        assetSymbol = "checkmark.circle"
+        selectedCardStyle = .instructions
+        await refreshTasks()
+    }
+
+    func makeDailySchedule(time: Date) -> OCKSchedule {
         let components = Calendar.current.dateComponents(
             [.hour, .minute],
             from: time
@@ -245,7 +409,7 @@ final class TaskManagementViewModel: ObservableObject {
         )
     }
 
-    private func makeTaskID(from title: String) -> String {
+    func makeTaskID(from title: String) -> String {
         let slug = title
             .lowercased()
             .components(separatedBy: CharacterSet.alphanumerics.inverted)
@@ -256,10 +420,67 @@ final class TaskManagementViewModel: ObservableObject {
         return "\(sanitizedTitle)_\(shortUUID)"
     }
 
-    private func sanitizeAssetSymbol(_ input: String?) -> String {
+    func sanitizeAssetSymbol(_ input: String?) -> String {
         let trimmed = (input ?? "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? "checkmark.circle" : trimmed
+    }
+
+    func taskUserInfo(for task: any OCKAnyTask) -> [String: String]? {
+        if let careTask = task as? OCKTask {
+            return careTask.userInfo
+        }
+        if let healthTask = task as? OCKHealthKitTask {
+            return healthTask.userInfo
+        }
+        return nil
+    }
+
+    func healthKitLinkage(for style: TaskCardStyle) -> OCKHealthKitLinkage {
+        switch style {
+        case .labeledValue:
+            return OCKHealthKitLinkage(
+                quantityIdentifier: .restingHeartRate,
+                quantityType: .discrete,
+                unit: HKUnit.count().unitDivided(by: .minute())
+            )
+        default:
+            return OCKHealthKitLinkage(
+                quantityIdentifier: .stepCount,
+                quantityType: .cumulative,
+                unit: .count()
+            )
+        }
+    }
+
+    func applySharedTaskConfiguration(
+        to task: inout OCKTask,
+        cardStyle: TaskCardStyle
+    ) {
+        let trimmedInstructions = instructions.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedInstructions.isEmpty {
+            task.instructions = trimmedInstructions
+        }
+        task.asset = sanitizeAssetSymbol(assetSymbol)
+        task.userInfo = [
+            Constants.taskCardStyleKey: cardStyle.rawValue,
+            Constants.taskDomainKey: Constants.thyroidDomainValue
+        ]
+    }
+
+    func applySharedTaskConfiguration(
+        to task: inout OCKHealthKitTask,
+        cardStyle: TaskCardStyle
+    ) {
+        let trimmedInstructions = instructions.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedInstructions.isEmpty {
+            task.instructions = trimmedInstructions
+        }
+        task.asset = sanitizeAssetSymbol(assetSymbol)
+        task.userInfo = [
+            Constants.taskCardStyleKey: cardStyle.rawValue,
+            Constants.taskDomainKey: Constants.thyroidDomainValue
+        ]
     }
 }
 
@@ -267,4 +488,6 @@ struct ManagedTaskItem: Identifiable {
     let id: String
     let title: String
     let assetSymbol: String
+    let cardStyle: TaskCardStyle
+    let taskType: ManagedTaskType
 }

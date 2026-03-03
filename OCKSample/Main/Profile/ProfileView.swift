@@ -18,90 +18,93 @@ struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
     @StateObject private var taskViewModel = TaskManagementViewModel()
     @ObservedObject var loginViewModel: LoginViewModel
-    private let suggestedSymbols = [
-        "checkmark.circle",
-        "pills.fill",
-        "pills.circle.fill",
-        "cross.case.fill",
-        "waveform.path.ecg",
-        "heart.circle.fill",
-        "figure.walk",
-        "calendar.badge.clock",
-        "mouth.fill",
-        "bell.fill"
-    ]
+    @State private var isPresentingAddTask = false
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                VStack(alignment: .leading) {
-                    TextField(
-                        "GIVEN_NAME",
-                        text: $viewModel.firstName
-                    )
-                    .padding()
-                    .cornerRadius(20.0)
-                    .shadow(radius: 10.0, x: 20, y: 10)
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 20) {
+                    VStack(alignment: .leading) {
+                        TextField(
+                            "GIVEN_NAME",
+                            text: $viewModel.firstName
+                        )
+                        .padding()
+                        .cornerRadius(20.0)
+                        .shadow(radius: 10.0, x: 20, y: 10)
 
-                    TextField(
-                        "FAMILY_NAME",
-                        text: $viewModel.lastName
-                    )
-                    .padding()
-                    .cornerRadius(20.0)
-                    .shadow(radius: 10.0, x: 20, y: 10)
+                        TextField(
+                            "FAMILY_NAME",
+                            text: $viewModel.lastName
+                        )
+                        .padding()
+                        .cornerRadius(20.0)
+                        .shadow(radius: 10.0, x: 20, y: 10)
 
-                    DatePicker(
-                        "BIRTHDAY",
-                        selection: $viewModel.birthday,
-                        displayedComponents: [DatePickerComponents.date]
-                    )
-                    .padding()
-                    .cornerRadius(20.0)
-                    .shadow(radius: 10.0, x: 20, y: 10)
-                }
+                        DatePicker(
+                            "BIRTHDAY",
+                            selection: $viewModel.birthday,
+                            displayedComponents: [DatePickerComponents.date]
+                        )
+                        .padding()
+                        .cornerRadius(20.0)
+                        .shadow(radius: 10.0, x: 20, y: 10)
+                    }
 
-                Button(action: {
-                    Task {
-                        do {
-                            try await viewModel.saveProfile()
-                        } catch {
-                            Logger.profile.error("Error saving profile: \(error)")
+                    Button(action: {
+                        Task {
+                            do {
+                                try await viewModel.saveProfile()
+                            } catch {
+                                Logger.profile.error("Error saving profile: \(error)")
+                            }
                         }
-                    }
-                }, label: {
-                    Text(
-                        "SAVE_PROFILE"
-                    )
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding()
-                    .frame(width: 300, height: 50)
-                })
-                .background(Color(.green))
-                .cornerRadius(15)
+                    }, label: {
+                        Text(
+                            "SAVE_PROFILE"
+                        )
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(width: 300, height: 50)
+                    })
+                    .background(Color(.green))
+                    .cornerRadius(15)
 
-                taskManagementSection
+                    taskListSection
 
-                // Notice that "action" is a closure (which is essentially
-                // a function as argument like we discussed in class)
-                Button(action: {
-                    Task {
-                        await loginViewModel.logout()
-                    }
-                }, label: {
-                    Text(
-                        "LOG_OUT"
-                    )
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding()
-                    .frame(width: 300, height: 50)
-                })
-                .background(Color(.red))
-                .cornerRadius(15)
+                    // Notice that "action" is a closure (which is essentially
+                    // a function as argument like we discussed in class)
+                    Button(action: {
+                        Task {
+                            await loginViewModel.logout()
+                        }
+                    }, label: {
+                        Text(
+                            "LOG_OUT"
+                        )
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(width: 300, height: 50)
+                    })
+                    .background(Color(.red))
+                    .cornerRadius(15)
+                }
+                .padding(.vertical, 12)
             }
-            .padding(.vertical, 12)
+            .navigationTitle("Profile")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Add Task") {
+                        taskViewModel.resetDraft()
+                        isPresentingAddTask = true
+                    }
+                }
+            }
+            .sheet(isPresented: $isPresentingAddTask) {
+                AddTaskSheetView(taskViewModel: taskViewModel)
+            }
         }
         .onReceive(patients.publisher) { publishedPatient in
             viewModel.updatePatient(publishedPatient.result)
@@ -115,69 +118,10 @@ struct ProfileView: View {
         OCKPatientQuery(for: Date())
     }
 
-    private var taskManagementSection: some View {
+    private var taskListSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Task Management")
+            Text("Tasks")
                 .font(.headline)
-
-            TextField("Task title", text: $taskViewModel.title)
-                .textFieldStyle(.roundedBorder)
-
-            TextField("Instructions (optional)", text: $taskViewModel.instructions, axis: .vertical)
-                .lineLimit(2...4)
-                .textFieldStyle(.roundedBorder)
-
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Task icon (SF Symbol)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-
-                HStack(spacing: 10) {
-                    Image(systemName: safeSymbolName(taskViewModel.assetSymbol))
-                        .font(.title3)
-                        .frame(width: 26, height: 26)
-                        .foregroundColor(.accentColor)
-
-                    TextField("SF Symbol name (e.g. pills.fill)", text: $taskViewModel.assetSymbol)
-                        .textFieldStyle(.roundedBorder)
-                }
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(suggestedSymbols, id: \.self) { symbol in
-                            Button {
-                                taskViewModel.assetSymbol = symbol
-                            } label: {
-                                Image(systemName: symbol)
-                                    .frame(width: 24, height: 24)
-                                    .padding(6)
-                            }
-                            .buttonStyle(.bordered)
-                        }
-                    }
-                }
-            }
-
-            DatePicker(
-                "Reminder time",
-                selection: $taskViewModel.scheduleTime,
-                displayedComponents: .hourAndMinute
-            )
-
-            Button {
-                Task {
-                    await taskViewModel.createTask()
-                }
-            } label: {
-                Text("Add Task")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-            }
-            .background(Color(.systemBlue))
-            .cornerRadius(10)
-            .disabled(taskViewModel.isProcessing)
 
             if !taskViewModel.statusMessage.isEmpty {
                 Text(taskViewModel.statusMessage)
@@ -200,6 +144,12 @@ struct ProfileView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(task.title)
                                 .font(.body)
+                            Text(task.taskType.displayName)
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                            Text(task.cardStyle.displayName)
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
                             Text(task.id)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
@@ -213,7 +163,7 @@ struct ProfileView: View {
                             Text("Delete")
                         }
                         .buttonStyle(.bordered)
-                        .disabled(taskViewModel.isProcessing)
+                        .disabled(taskViewModel.isProcessing || task.taskType != .task)
                     }
                     .padding(10)
                     .background(Color(.systemBackground))
@@ -232,6 +182,146 @@ struct ProfileView: View {
         return trimmed.isEmpty ? "checkmark.circle" : trimmed
     }
 
+}
+
+private struct AddTaskSheetView: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject var taskViewModel: TaskManagementViewModel
+
+    private let suggestedSymbols = [
+        "checkmark.circle",
+        "pills.fill",
+        "pills.circle.fill",
+        "cross.case.fill",
+        "waveform.path.ecg",
+        "heart.circle.fill",
+        "figure.walk",
+        "calendar.badge.clock",
+        "mouth.fill",
+        "bell.fill"
+    ]
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    TextField("Task title", text: $taskViewModel.title)
+                    TextField(
+                        "Instructions (optional)",
+                        text: $taskViewModel.instructions,
+                        axis: .vertical
+                    )
+                    .lineLimit(2...4)
+
+                    Picker("Card View", selection: $taskViewModel.selectedCardStyle) {
+                        ForEach(TaskCardStyle.creationOptions) { style in
+                            Text(style.displayName).tag(style)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
+
+                Section("Icon") {
+                    HStack(spacing: 10) {
+                        Image(systemName: safeSymbolName(taskViewModel.assetSymbol))
+                            .font(.title3)
+                            .frame(width: 26, height: 26)
+                            .foregroundColor(.accentColor)
+
+                        TextField(
+                            "SF Symbol name (e.g. pills.fill)",
+                            text: $taskViewModel.assetSymbol
+                        )
+                    }
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(suggestedSymbols, id: \.self) { symbol in
+                                Button {
+                                    taskViewModel.assetSymbol = symbol
+                                } label: {
+                                    Image(systemName: symbol)
+                                        .frame(width: 24, height: 24)
+                                        .padding(6)
+                                }
+                                .buttonStyle(.bordered)
+                            }
+                        }
+                    }
+                }
+
+                Section("Schedule") {
+                    DatePicker(
+                        "Reminder time",
+                        selection: $taskViewModel.scheduleTime,
+                        displayedComponents: .hourAndMinute
+                    )
+                }
+
+                Section("Create") {
+                    HStack {
+                        Text("Task")
+                        Spacer()
+                        Button("Add") {
+                            Task {
+                                await taskViewModel.createCareTask()
+                                if !taskViewModel.hasError {
+                                    dismiss()
+                                }
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundColor(.red)
+                        .disabled(taskViewModel.isProcessing || isTitleEmpty)
+                    }
+
+                    HStack {
+                        Text("HealthKitTask")
+                        Spacer()
+                        Button("Add") {
+                            Task {
+                                await taskViewModel.createHealthKitTask()
+                                if !taskViewModel.hasError {
+                                    dismiss()
+                                }
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundColor(.red)
+                        .disabled(taskViewModel.isProcessing || isTitleEmpty)
+                    }
+
+                    Text("HealthKitTask syncs from Health data and is read-only.")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+
+                if !taskViewModel.statusMessage.isEmpty {
+                    Text(taskViewModel.statusMessage)
+                        .font(.footnote)
+                        .foregroundColor(taskViewModel.hasError ? .red : .green)
+                }
+            }
+            .navigationTitle("Add Task")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .disabled(taskViewModel.isProcessing)
+                }
+            }
+        }
+    }
+
+    private var isTitleEmpty: Bool {
+        taskViewModel.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private func safeSymbolName(_ rawSymbol: String) -> String {
+        let trimmed = rawSymbol.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? "checkmark.circle" : trimmed
+    }
 }
 
 struct ProfileView_Previews: PreviewProvider {

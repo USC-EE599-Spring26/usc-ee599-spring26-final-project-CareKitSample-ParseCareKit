@@ -245,6 +245,9 @@ extension CareViewController {
 
         var query = OCKEventQuery(for: date)
         query.taskIDs = [task.id]
+        if let dynamicCards = taskViewControllersForTaskStyle(task, query: query) {
+            return dynamicCards
+        }
 
         switch task.id {
         case TaskID.recoveryStepCount, TaskID.steps:
@@ -332,6 +335,108 @@ extension CareViewController {
 
         default:
             let card = EventQueryView<InstructionsTaskView>(
+                query: query
+            )
+            .formattedHostingController()
+            return [card]
+        }
+    }
+
+    fileprivate func taskViewControllersForTaskStyle(
+        _ task: any OCKAnyTask,
+        query: OCKEventQuery
+    ) -> [UIViewController]? {
+        guard let rawStyle = taskUserInfo(for: task)?[Constants.taskCardStyleKey],
+              let style = TaskCardStyle(rawValue: rawStyle) else {
+            return nil
+        }
+        return taskViewControllers(for: style, query: query)
+    }
+
+    fileprivate func taskUserInfo(
+        for task: any OCKAnyTask
+    ) -> [String: String]? {
+        if let careTask = task as? OCKTask {
+            return careTask.userInfo
+        }
+        if let healthTask = task as? OCKHealthKitTask {
+            return healthTask.userInfo
+        }
+        return nil
+    }
+
+    fileprivate func taskViewControllers(
+        for style: TaskCardStyle,
+        query: OCKEventQuery
+    ) -> [UIViewController] {
+        switch style {
+        case .instructions:
+            let card = EventQueryView<InstructionsTaskView>(
+                query: query
+            )
+            .formattedHostingController()
+            return [card]
+
+        case .simple:
+            let card = EventQueryView<SimpleTaskView>(
+                query: query
+            )
+            .formattedHostingController()
+            return [card]
+
+        case .buttonLog:
+            #if os(iOS)
+            let card = OCKButtonLogTaskViewController(
+                query: query,
+                store: self.store
+            )
+            return [card]
+            #else
+            let card = EventQueryView<InstructionsTaskView>(
+                query: query
+            )
+            .formattedHostingController()
+            return [card]
+            #endif
+
+        case .checklist:
+            #if os(iOS)
+            let card = OCKChecklistTaskViewController(
+                query: query,
+                store: self.store
+            )
+            return [card]
+            #else
+            let card = EventQueryView<InstructionsTaskView>(
+                query: query
+            )
+            .formattedHostingController()
+            return [card]
+            #endif
+
+        case .featured, .link:
+            let card = EventQueryView<InstructionsTaskView>(
+                query: query
+            )
+            .formattedHostingController()
+            return [card]
+
+        case .grid:
+            let card = EventQueryView<SimpleTaskView>(
+                query: query
+            )
+            .formattedHostingController()
+            return [card]
+
+        case .numericProgress:
+            let card = EventQueryView<NumericProgressTaskView>(
+                query: query
+            )
+            .formattedHostingController()
+            return [card]
+
+        case .labeledValue:
+            let card = EventQueryView<LabeledValueTaskView>(
                 query: query
             )
             .formattedHostingController()
