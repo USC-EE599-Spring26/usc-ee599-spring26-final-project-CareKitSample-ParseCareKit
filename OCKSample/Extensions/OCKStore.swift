@@ -35,7 +35,6 @@ extension OCKStore {
         return try await addContacts(missing)
     }
 
-
     /// Seeds the store with BioMesh default tasks and contacts on first sign-up.
     func populateDefaultCarePlansTasksContacts(startDate: Date = Date()) async throws {
 

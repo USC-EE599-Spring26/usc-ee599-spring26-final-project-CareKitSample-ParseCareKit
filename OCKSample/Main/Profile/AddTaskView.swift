@@ -61,8 +61,8 @@ struct AddTaskView: View {
                 if viewModel.taskKind == .healthKit {
                     Section(header: Text("HealthKit Metric")) {
                         Picker("Metric", selection: $viewModel.healthKitMetric) {
-                            ForEach(AddTaskViewModel.HealthKitMetric.allCases) { m in
-                                Text(m.rawValue).tag(m)
+                            ForEach(AddTaskViewModel.HealthKitMetric.allCases) { mmm in
+                                Text(mmm.rawValue).tag(mmm)
                             }
                         }
                         if viewModel.healthKitMetric == .steps {

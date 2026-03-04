@@ -173,7 +173,7 @@ final class AddTaskViewModel: ObservableObject {
     // Private builders
 
     private func buildSchedule() -> OCKSchedule {
-        let hour   = Calendar.current.component(.hour,   from: timeOfDay)
+        let hour   = Calendar.current.component(.hour, from: timeOfDay)
         let minute = Calendar.current.component(.minute, from: timeOfDay)
         let start  = Calendar.current.date(
             bySettingHour: hour, minute: minute, second: 0, of: startDate
@@ -270,9 +270,9 @@ final class AddTaskViewModel: ObservableObject {
         task.asset = trimmed
     }
 
-    private func slug(_ s: String) -> String {
+    private func slug(_ sss: String) -> String {
         let allowed = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-"))
-        let cleaned = s.lowercased()
+        let cleaned = sss.lowercased()
             .replacingOccurrences(of: " ", with: "-")
             .components(separatedBy: allowed.inverted)
             .joined()

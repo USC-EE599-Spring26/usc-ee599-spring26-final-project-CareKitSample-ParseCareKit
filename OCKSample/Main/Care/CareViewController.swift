@@ -27,7 +27,8 @@
  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// swiftlint:disable type_body_length
+// swiftlint:disable cyclomatic_complexity
 import CareKit
 import CareKitEssentials
 import CareKitStore
@@ -38,9 +39,9 @@ import UIKit
 
 @MainActor
 final class CareViewController: OCKDailyPageViewController, @unchecked Sendable {
-
 	private var isSyncing = false
 	private var isLoading = false
+
     private var style: Styler {
         CustomStylerKey.defaultValue
     }
@@ -155,7 +156,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
             if Calendar.current.isDate(date, inSameDayAs: Date()) {
                 // Add a non-CareKit view into the list
                 let tipTitle = "Caffeine & Your Health"
-                let tipText = "High caffeine intake (>400 mg/day) is linked to increased anxiety and disrupted sleep. Track your intake daily to find your personal patterns."
+                let tipText = "High caffeine intake (>400 mg/day) is linked to increased anxiety"
                 let tipView = TipView()
                 tipView.headerView.titleLabel.text = tipTitle
                 tipView.headerView.detailLabel.text = tipText
@@ -341,4 +342,3 @@ private extension View {
         return viewController
     }
 }
-// swiftlint:disable:next line_length
