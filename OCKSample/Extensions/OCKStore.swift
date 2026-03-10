@@ -75,6 +75,8 @@ extension OCKStore {
         )
         doxylamine.instructions = String(localized: "DOXYLAMINE_INSTRUCTIONS")
         doxylamine.asset = "pills.fill"
+		doxylamine.card = .checklist
+		doxylamine.priority = 2
 
         let nauseaSchedule = OCKSchedule(
             composing: [
@@ -98,6 +100,8 @@ extension OCKStore {
         nausea.impactsAdherence = false
         nausea.instructions = String(localized: "NAUSEA_INSTRUCTIONS")
         nausea.asset = "bed.double"
+		nausea.card = .instruction
+		nausea.priority = 5
 
         let kegelElement = OCKScheduleElement(
             start: beforeBreakfast,
@@ -115,6 +119,8 @@ extension OCKStore {
         )
         kegels.impactsAdherence = true
         kegels.instructions = String(localized: "KEGEL_INSTRUCTIONS")
+		kegels.card = .simple
+		kegels.priority = 3
 
         let stretchElement = OCKScheduleElement(
             start: beforeBreakfast,
@@ -131,7 +137,9 @@ extension OCKStore {
             schedule: stretchSchedule
         )
         stretch.impactsAdherence = true
-        stretch.asset = "figure.walk"
+		stretch.asset = "figure.flexibility"
+		stretch.card = .simple
+		stretch.priority = 4
 
         _ = try await addTasksIfNotPresent(
             [
