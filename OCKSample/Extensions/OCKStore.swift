@@ -101,7 +101,7 @@ extension OCKStore {
         nausea.impactsAdherence = false
         nausea.instructions = String(localized: "NAUSEA_INSTRUCTIONS")
         nausea.asset = "bed.double"
-		nausea.card = .instruction
+		nausea.card = .button
 		nausea.priority = 5
 
         let kegelElement = OCKScheduleElement(
@@ -120,7 +120,7 @@ extension OCKStore {
         )
         kegels.impactsAdherence = true
         kegels.instructions = String(localized: "KEGEL_INSTRUCTIONS")
-		kegels.card = .simple
+		kegels.card = .custom
 		kegels.priority = 3
 
         let stretchElement = OCKScheduleElement(
