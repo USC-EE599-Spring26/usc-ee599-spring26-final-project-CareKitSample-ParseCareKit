@@ -133,22 +133,25 @@ struct LoginView: View {
             .background(Color(.green))
             .cornerRadius(15)
 
-            Button(action: {
-                Task {
-                    await viewModel.loginAnonymously()
-                }
-            }, label: {
-                switch signupLoginSegmentValue {
-                case 0:
-                    Text("LOGIN_ANONYMOUSLY")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(width: 300)
-                default:
-                    EmptyView()
-                }
-            })
+            Button(
+				action: {
+					Task {
+						await viewModel.loginAnonymously()
+					}
+				},
+				label: {
+					switch signupLoginSegmentValue {
+					case 0:
+						Text("LOGIN_ANONYMOUSLY")
+							.font(.headline)
+							.foregroundColor(.white)
+							.padding()
+							.frame(width: 300)
+					default:
+						EmptyView()
+					}
+				}
+			)
             .background(Color(.lightGray))
             .cornerRadius(15)
 

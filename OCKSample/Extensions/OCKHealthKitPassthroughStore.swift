@@ -35,7 +35,7 @@ extension OCKHealthKitPassthroughStore {
         )
         var steps = OCKHealthKitTask(
             id: TaskID.steps,
-            title: String(localized: "STEPS"),
+            title: String(localized: "STEPS") + "Testing My New String",
             carePlanUUID: nil,
             schedule: stepSchedule,
             healthKitLinkage: OCKHealthKitLinkage(
