@@ -36,11 +36,14 @@ import os.log
 import SwiftUI
 import UIKit
 
+// swiftlint:disable type_body_length
+
 @MainActor
 final class CareViewController: OCKDailyPageViewController, @unchecked Sendable {
 
 	private var isSyncing = false
 	private var isLoading = false
+	private let swiftUIPadding: CGFloat = 15
     private var style: Styler {
         CustomStylerKey.defaultValue
     }
@@ -212,16 +215,24 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         query.excludesTasksWithNoEvents = true
         do {
             let tasks = try await store.fetchAnyTasks(query: query)
-            /* let orderedTasks = TaskID.ordered.compactMap { orderedTaskID in
-                tasks.first(where: { $0.id == orderedTaskID })
-            } */
-            return tasks
+
+			guard let tasksWithPriority = tasks as? [CareTask] else {
+				Logger.feed.warning("Could not cast all tasks to \"CareTask\"")
+				return tasks
+			}
+			let orderedPriorityTasks = tasksWithPriority.sortedByPriority()
+			let orderedTasks = orderedPriorityTasks.compactMap { orderedPriorityTask in
+				tasks.first(where: { $0.id == orderedPriorityTask.id })
+			}
+			return orderedTasks
+
         } catch {
             Logger.feed.error("Could not fetch tasks: \(error, privacy: .public)")
             return []
         }
     }
 
+	// swiftlint:disable:next cyclomatic_complexity
     private func taskViewControllers(
         _ task: any OCKAnyTask,
         on date: Date
@@ -230,78 +241,85 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         var query = OCKEventQuery(for: date)
         query.taskIDs = [task.id]
 
-        switch task.id {
-        case TaskID.steps:
-            let card = EventQueryView<NumericProgressTaskView>(
-                query: query
-            )
-            .formattedHostingController()
+		if let standardTask = task as? OCKTask {
 
-            return [card]
+			switch standardTask.card {
 
-        case TaskID.ovulationTestResult:
-            let card = EventQueryView<LabeledValueTaskView>(
-                query: query
-            )
-            .formattedHostingController()
+			case .button:
+				// This is a UIKit based card.
+				let card = OCKButtonLogTaskViewController(
+					query: query,
+					store: self.store
+				)
 
-            return [card]
+				return [card]
 
-        case TaskID.stretch:
-            let card = EventQueryView<InstructionsTaskView>(
-                query: query
-            )
-            .formattedHostingController()
+			case .checklist:
+				// This is a UIKit based card.
+				let card = OCKChecklistTaskViewController(
+					query: query,
+					store: self.store
+				)
 
-            return [card]
+				return [card]
 
-        case TaskID.kegels:
-            /*
-             Since the kegel task is only scheduled every other day, there will be cases
-             where it is not contained in the tasks array returned from the query.
-             */
-            let card = EventQueryView<SimpleTaskView>(
-                query: query
-            )
-            .formattedHostingController()
+			case .featured:
+				// Can be implememented based off of midterm.
+				return nil
 
-            return [card]
+			case .grid:
+				// Can be implememented based off of midterm.
+				return nil
 
-        #if os(iOS)
-        // Create a card for the doxylamine task if there are events for it on this day.
-        case TaskID.doxylamine:
+			case .instruction:
+				let card = EventQueryView<InstructionsTaskView>(
+					query: query
+				)
+				.padding(.vertical, swiftUIPadding)
+				.formattedHostingController()
 
-            // This is a UIKit based card.
-            let card = OCKChecklistTaskViewController(
-                query: query,
-                store: self.store
-            )
+				return [card]
 
-            return [card]
-        #endif
+			case .link:
+				// Can be implememented based off of midterm.
+				return nil
 
-        case TaskID.nausea:
+			case .simple:
 
-            #if os(iOS)
-            /*
-             Also create a card (UIKit view) that displays a single event.
-             The event query passed into the initializer specifies that only
-             today's log entries should be displayed by this log task view controller.
-             */
-            let nauseaCard = OCKButtonLogTaskViewController(
-                query: query,
-                store: self.store
-            )
+				let card = EventQueryView<SimpleTaskView>(
+					query: query
+				)
+				.padding(.vertical, swiftUIPadding)
+				.formattedHostingController()
 
-            return [nauseaCard]
+				return [card]
 
-            #else
-            return []
-            #endif
+			default:
+				return nil
+			}
 
-        default:
-            return nil
-        }
+		} else if let healthTask = task as? OCKHealthKitTask {
+			switch healthTask.card {
+
+			case .labeledValue:
+				// Can be implememented based off of midterm.
+				return nil
+
+			case .numericProgress:
+				let card = EventQueryView<NumericProgressTaskView>(
+					query: query
+				)
+				.padding(.vertical, swiftUIPadding)
+				.formattedHostingController()
+
+				return [card]
+			default:
+				return nil
+			}
+		} else {
+			return nil
+		}
+
     }
 
     private func appendTasks(
@@ -341,3 +359,5 @@ private extension View {
         return viewController
     }
 }
+
+// swiftlint:enable type_body_length
