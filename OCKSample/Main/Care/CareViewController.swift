@@ -245,6 +245,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 
 			switch standardTask.card {
 
+			#if os(iOS)
 			case .button:
 				// This is a UIKit based card.
 				let card = OCKButtonLogTaskViewController(
@@ -262,6 +263,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 				)
 
 				return [card]
+			#endif
 
 			case .featured:
 				// Can be implememented based off of midterm.
