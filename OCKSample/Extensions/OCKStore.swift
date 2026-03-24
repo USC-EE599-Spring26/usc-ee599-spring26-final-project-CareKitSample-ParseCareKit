@@ -13,6 +13,7 @@ import Contacts
 import os.log
 import ParseSwift
 import ParseCareKit
+import ResearchKitSwiftUI
 
 extension OCKStore {
 
@@ -75,6 +76,8 @@ extension OCKStore {
         )
         doxylamine.instructions = String(localized: "DOXYLAMINE_INSTRUCTIONS")
         doxylamine.asset = "pills.fill"
+		doxylamine.card = .checklist
+		doxylamine.priority = 2
 
         let nauseaSchedule = OCKSchedule(
             composing: [
@@ -98,6 +101,8 @@ extension OCKStore {
         nausea.impactsAdherence = false
         nausea.instructions = String(localized: "NAUSEA_INSTRUCTIONS")
         nausea.asset = "bed.double"
+		nausea.card = .button
+		nausea.priority = 5
 
         let kegelElement = OCKScheduleElement(
             start: beforeBreakfast,
@@ -115,6 +120,8 @@ extension OCKStore {
         )
         kegels.impactsAdherence = true
         kegels.instructions = String(localized: "KEGEL_INSTRUCTIONS")
+		kegels.card = .custom
+		kegels.priority = 3
 
         let stretchElement = OCKScheduleElement(
             start: beforeBreakfast,
@@ -131,14 +138,19 @@ extension OCKStore {
             schedule: stretchSchedule
         )
         stretch.impactsAdherence = true
-        stretch.asset = "figure.walk"
+		stretch.asset = "figure.flexibility"
+		stretch.card = .simple
+		stretch.priority = 4
+
+		let qualityOfLife = createQualityOfLifeSurveyTask(carePlanUUID: nil)
 
         _ = try await addTasksIfNotPresent(
             [
                 nausea,
                 doxylamine,
                 kegels,
-                stretch
+                stretch,
+				qualityOfLife
             ]
         )
 
@@ -192,4 +204,71 @@ extension OCKStore {
             ]
         )
     }
+
+	func createQualityOfLifeSurveyTask(carePlanUUID: UUID?) -> OCKTask {
+		let qualityOfLifeTaskId = TaskID.qualityOfLife
+		let thisMorning = Calendar.current.startOfDay(for: Date())
+		let aFewDaysAgo = Calendar.current.date(byAdding: .day, value: -4, to: thisMorning)!
+		let beforeBreakfast = Calendar.current.date(byAdding: .hour, value: 8, to: aFewDaysAgo)!
+		let qualityOfLifeElement = OCKScheduleElement(
+			start: beforeBreakfast,
+			end: nil,
+			interval: DateComponents(day: 1)
+		)
+		let qualityOfLifeSchedule = OCKSchedule(
+			composing: [qualityOfLifeElement]
+		)
+		let textChoiceYesText = String(localized: "ANSWER_YES")
+		let textChoiceNoText = String(localized: "ANSWER_NO")
+		let yesValue = "Yes"
+		let noValue = "No"
+		let choices: [TextChoice] = [
+			.init(
+				id: "\(qualityOfLifeTaskId)_0",
+				choiceText: textChoiceYesText,
+				value: yesValue
+			),
+			.init(
+				id: "\(qualityOfLifeTaskId)_1",
+				choiceText: textChoiceNoText,
+				value: noValue
+			)
+
+		]
+		let questionOne = SurveyQuestion(
+			id: "\(qualityOfLifeTaskId)-managing-time",
+			type: .multipleChoice,
+			required: true,
+			title: String(localized: "QUALITY_OF_LIFE_TIME"),
+			textChoices: choices,
+			choiceSelectionLimit: .single
+		)
+		let questionTwo = SurveyQuestion(
+			id: qualityOfLifeTaskId,
+			type: .slider,
+			required: false,
+			title: String(localized: "QUALITY_OF_LIFE_STRESS"),
+			detail: String(localized: "QUALITY_OF_LIFE_STRESS_DETAIL"),
+			integerRange: 0...10,
+			sliderStepValue: 1
+		)
+		let questions = [questionOne, questionTwo]
+		let stepOne = SurveyStep(
+			id: "\(qualityOfLifeTaskId)-step-1",
+			questions: questions
+		)
+		var qualityOfLife = OCKTask(
+			id: "\(qualityOfLifeTaskId)-stress",
+			title: String(localized: "QUALITY_OF_LIFE"),
+			carePlanUUID: carePlanUUID,
+			schedule: qualityOfLifeSchedule
+		)
+		qualityOfLife.impactsAdherence = true
+		qualityOfLife.asset = "brain.head.profile"
+		qualityOfLife.card = .survey
+		qualityOfLife.surveySteps = [stepOne]
+		qualityOfLife.priority = 1
+
+		return qualityOfLife
+	}
 }
