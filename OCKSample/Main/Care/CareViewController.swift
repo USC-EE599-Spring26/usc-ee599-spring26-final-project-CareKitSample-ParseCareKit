@@ -164,9 +164,9 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         self.isLoading = true
 
 		Task {
-			#if canImport(ResearchKit)
 			guard await Utility.checkIfOnboardingIsComplete() else {
 
+				#if canImport(ResearchKit) && canImport(ResearchKitUI)
 				let onboardSurvey = Onboard()
 				var query = OCKEventQuery(for: Date())
 				query.taskIDs = [Onboard.identifier()]
@@ -191,6 +191,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 					onboardCard,
 					animated: false
 				)
+				#endif
 				self.isLoading = false
 				return
 			}
@@ -198,7 +199,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 			// Always call this method to ensure dates for
 			// queries are correct.
 			let date = modifyDateIfNeeded(date)
-
+			#if os(os)
 			let isCurrentDay = isSameDay(as: date)
 
 			// Only show the tip view on the current date
