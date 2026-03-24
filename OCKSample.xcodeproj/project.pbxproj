@@ -130,6 +130,11 @@
 		709ED0A12F60ECCD0022E100 /* ResearchKitSwiftUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 709ED0952F60EC3E0022E100 /* ResearchKitSwiftUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		709ED0A32F60ECDD0022E100 /* ResearchKitSwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 709ED0952F60EC3E0022E100 /* ResearchKitSwiftUI.framework */; };
 		709ED0A42F60ECDD0022E100 /* ResearchKitSwiftUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 709ED0952F60EC3E0022E100 /* ResearchKitSwiftUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		70A902E12F63850F001EB5B8 /* MyCustomCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70A902E02F638509001EB5B8 /* MyCustomCardView.swift */; };
+		70A902E22F63850F001EB5B8 /* MyCustomCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70A902E02F638509001EB5B8 /* MyCustomCardView.swift */; };
+		70A902E42F6385B0001EB5B8 /* CardEnabledEnvironmentKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70A902E32F6385A5001EB5B8 /* CardEnabledEnvironmentKey.swift */; };
+		70A902E52F6385B0001EB5B8 /* CardEnabledEnvironmentKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70A902E32F6385A5001EB5B8 /* CardEnabledEnvironmentKey.swift */; };
+		70A902E62F6385B0001EB5B8 /* CardEnabledEnvironmentKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70A902E32F6385A5001EB5B8 /* CardEnabledEnvironmentKey.swift */; };
 		70A98D62278A2683009B58F2 /* Styler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9169381A271B64E100A634ED /* Styler.swift */; };
 		70A98D63278A268B009B58F2 /* ColorStyler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9169381C271B650700A634ED /* ColorStyler.swift */; };
 		70B8E0A52F0EC1CA00440FCA /* Mutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B8E0A42F0EC1CA00440FCA /* Mutex.swift */; };
@@ -353,6 +358,8 @@
 		709ECF932F60E0BB0022E100 /* CareTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareTask.swift; sourceTree = "<group>"; };
 		709ED02C2F60EBA00022E100 /* ResearchKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ResearchKit.xcodeproj; path = ResearchKit/ResearchKit.xcodeproj; sourceTree = SOURCE_ROOT; };
 		709ED0602F60EC260022E100 /* ResearchKitSwiftUI.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ResearchKitSwiftUI.xcodeproj; path = ResearchKit/ResearchKitSwiftUI/ResearchKitSwiftUI.xcodeproj; sourceTree = SOURCE_ROOT; };
+		70A902E02F638509001EB5B8 /* MyCustomCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCustomCardView.swift; sourceTree = "<group>"; };
+		70A902E32F6385A5001EB5B8 /* CardEnabledEnvironmentKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardEnabledEnvironmentKey.swift; sourceTree = "<group>"; };
 		70B8E0A42F0EC1CA00440FCA /* Mutex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mutex.swift; sourceTree = "<group>"; };
 		70BD2B1E254B44DB0030B424 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		70CF66E328E1E74C00FAE977 /* TintColorFlipKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TintColorFlipKey.swift; sourceTree = "<group>"; };
@@ -666,6 +673,7 @@
 			isa = PBXGroup;
 			children = (
 				E7C37848228F887800E982D8 /* TipView.swift */,
+				70A902E02F638509001EB5B8 /* MyCustomCardView.swift */,
 				70E3422D2DB0626A005124F9 /* Modifiers */,
 			);
 			path = Cards;
@@ -715,10 +723,10 @@
 			isa = PBXGroup;
 			children = (
 				7099D1FE29E98D900037CD8E /* AppError.swift */,
+				7089F1BC2F510C900000DC33 /* CareKitCard.swift */,
 				7099D20A29E98E400037CD8E /* InstallationChannel.swift */,
 				7099D20429E98DFF0037CD8E /* TaskID.swift */,
 				7099D20729E98E200037CD8E /* UserType.swift */,
-				7089F1BC2F510C900000DC33 /* CareKitCard.swift */,
 				7099D1FD29E98D780037CD8E /* Parse */,
 			);
 			path = Models;
@@ -746,6 +754,7 @@
 			isa = PBXGroup;
 			children = (
 				70F0EFE928C2EE6C0005B5A2 /* AppDelegateKey.swift */,
+				70A902E32F6385A5001EB5B8 /* CardEnabledEnvironmentKey.swift */,
 				70F921A727CA9A3A00368CEC /* CustomStylerKey.swift */,
 				70F03AA727860E7700E5AFB4 /* FontColorKey.swift */,
 				918FDEC4271B4EA70045A0EF /* StoreCoordinatorKey.swift */,
@@ -1153,6 +1162,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70A902E12F63850F001EB5B8 /* MyCustomCardView.swift in Sources */,
 				707D29462DCBE68500980253 /* MainTabView.swift in Sources */,
 				707D29472DCBE68500980253 /* User.swift in Sources */,
 				7089F1BD2F510C970000DC33 /* CareKitCard.swift in Sources */,
@@ -1171,6 +1181,7 @@
 				707D29532DCBE68500980253 /* Logger.swift in Sources */,
 				707D29542DCBE68500980253 /* TintColorFlipKey.swift in Sources */,
 				707D29552DCBE68500980253 /* Installation.swift in Sources */,
+				70A902E62F6385B0001EB5B8 /* CardEnabledEnvironmentKey.swift in Sources */,
 				7089F1C32F510CDD0000DC33 /* OCKTask+Card.swift in Sources */,
 				709ECF942F60E0BF0022E100 /* CareTask.swift in Sources */,
 				707D29562DCBE68500980253 /* SplashScreenView.swift in Sources */,
@@ -1256,6 +1267,7 @@
 				70C0D474279BA492003DA141 /* Utility.swift in Sources */,
 				7089F1BF2F510C970000DC33 /* CareKitCard.swift in Sources */,
 				91AD923D24A4C42D00925D4D /* AppDelegate.swift in Sources */,
+				70A902E42F6385B0001EB5B8 /* CardEnabledEnvironmentKey.swift in Sources */,
 				91AD924124A4C42D00925D4D /* NotificationView.swift in Sources */,
 				7099D20C29E98E400037CD8E /* InstallationChannel.swift in Sources */,
 				70308886258273D400FFABB6 /* LoginViewModel.swift in Sources */,
@@ -1277,6 +1289,7 @@
 				7055723F2DC1E63A008E5B0A /* InsightsView.swift in Sources */,
 				709ECF962F60E0BF0022E100 /* CareTask.swift in Sources */,
 				7036E64025717F85006E9A3C /* Constants.swift in Sources */,
+				70A902E52F6385B0001EB5B8 /* CardEnabledEnvironmentKey.swift in Sources */,
 				7099D20529E98DFF0037CD8E /* TaskID.swift in Sources */,
 				7036E4CE256E9A0C006E9A3C /* ContactView.swift in Sources */,
 				70F03A972786098F00E5AFB4 /* OCKStore.swift in Sources */,
@@ -1305,6 +1318,7 @@
 				918FDEC5271B4EA70045A0EF /* StoreCoordinatorKey.swift in Sources */,
 				91693822271B897200A634ED /* Utility.swift in Sources */,
 				707CC718254DA91900116728 /* OCKLocalization.swift in Sources */,
+				70A902E22F63850F001EB5B8 /* MyCustomCardView.swift in Sources */,
 				E7C37849228F887800E982D8 /* TipView.swift in Sources */,
 				70077597252228E900EC0EDA /* User.swift in Sources */,
 				7089F1CD2F510E980000DC33 /* CareKitTaskViewModel.swift in Sources */,
