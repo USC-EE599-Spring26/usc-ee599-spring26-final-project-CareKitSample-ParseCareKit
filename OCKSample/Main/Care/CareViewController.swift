@@ -166,7 +166,6 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 		Task {
 			guard await Utility.checkIfOnboardingIsComplete() else {
 
-				#if canImport(ResearchKit) && canImport(ResearchKitUI)
 				let onboardSurvey = Onboard()
 				var query = OCKEventQuery(for: Date())
 				query.taskIDs = [Onboard.identifier()]
@@ -191,7 +190,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 					onboardCard,
 					animated: false
 				)
-				#endif
+
 				self.isLoading = false
 				return
 			}
@@ -258,6 +257,8 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 				return tasks
 			}
 			let orderedPriorityTasks = tasksWithPriority.sortedByPriority()
+			// TODO: Modify array to remove the Onboarding task
+			// so it doesn't show after onboarding.
 			let orderedTasks = orderedPriorityTasks.compactMap { orderedPriorityTask in
 				tasks.first(where: { $0.id == orderedPriorityTask.id })
 			}
@@ -345,7 +346,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 
 				return [card]
 
-			#if canImport(ResearchKit)
+			#if canImport(ResearchKit) && canImport(ResearchKitUI)
 			case .uiKitSurvey:
 				guard let surveyTask = task as? OCKTask,
 					  let survey = surveyTask.uiKitSurvey else {
@@ -463,7 +464,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
     }
 }
 
-#if canImport(ResearchKit)
+#if canImport(ResearchKit) && canImport(ResearchKitUI)
 extension CareViewController: OCKSurveyTaskViewControllerDelegate {
 
 	/*
