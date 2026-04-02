@@ -15,12 +15,21 @@ import SwiftUI
 struct ProfileView: View {
 	private static var query = OCKPatientQuery(for: Date())
 	@CareStoreFetchRequest(query: query) private var patients
+
+	static func eventQuery() -> OCKEventQuery {
+		var query = OCKEventQuery(for: Date())
+		query.taskIDs = ["exampleTask"]
+		return query
+	}
+	@CareStoreFetchRequest(query: eventQuery()) var events
+
 	@StateObject private var viewModel = ProfileViewModel()
 	@ObservedObject var loginViewModel: LoginViewModel
 	@State var isPresentingAddTask = false
 
 	var body: some View {
 		NavigationView {
+
 			VStack {
 				VStack(alignment: .leading) {
 					TextField("First Name",
