@@ -20,7 +20,9 @@ class MyContactViewController: OCKListViewController {
 
 	fileprivate var contacts = [OCKAnyContact]()
 	fileprivate let store: OCKAnyStoreProtocol
+	#if os(iOS)
 	fileprivate let viewSynchronizer = OCKDetailedContactViewSynchronizer()
+	#endif
 
 	/// Initialize using a store manager. All of the contacts in the store manager will be queried and dispalyed.
 	///
@@ -63,6 +65,7 @@ class MyContactViewController: OCKListViewController {
 
 	func fetchMyContact() async throws {
 
+		/*
 		guard (try? await User.current()) != nil,
 			  let personUUIDString = try? await Utility.getRemoteClockUUID().uuidString else {
 			Logger.myContact.error("User not logged in")
@@ -70,7 +73,7 @@ class MyContactViewController: OCKListViewController {
 			return
 		}
 
-		/*
+
 		 TODO: How would you modify this query to only fetch the contact that belongs to this device?
 
 		 Hint 1: There are multiple ways to do this. You can modify the query
@@ -93,6 +96,7 @@ class MyContactViewController: OCKListViewController {
 	func displayContacts() {
 		self.clear()
 		for contact in self.contacts {
+			#if os(iOS)
 			var contactQuery = OCKContactQuery(for: Date())
 			contactQuery.ids = [contact.id]
 			contactQuery.limit = 1
@@ -102,6 +106,7 @@ class MyContactViewController: OCKListViewController {
 				viewSynchronizer: viewSynchronizer
 			)
 			self.appendViewController(contactViewController, animated: false)
+			#endif
 		}
 	}
 }

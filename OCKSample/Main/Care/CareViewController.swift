@@ -169,6 +169,8 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 				let onboardSurvey = Onboard()
 				var query = OCKEventQuery(for: Date())
 				query.taskIDs = [Onboard.identifier()]
+
+				#if os(iOS)
 				let onboardCard = OCKSurveyTaskViewController(
 					eventQuery: query,
 					store: self.store,
@@ -190,6 +192,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 					onboardCard,
 					animated: false
 				)
+				#endif
 
 				self.isLoading = false
 				return
