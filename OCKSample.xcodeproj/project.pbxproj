@@ -183,6 +183,16 @@
 		70F03AB42788C76700E5AFB4 /* ParseCareKit.plist in Resources */ = {isa = PBXBuildFile; fileRef = 91AD922124A45A3900925D4D /* ParseCareKit.plist */; };
 		70F0EFE828C2EC050005B5A2 /* OCKSampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F0EFE728C2EC050005B5A2 /* OCKSampleApp.swift */; };
 		70F0EFEA28C2EE6C0005B5A2 /* AppDelegateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F0EFE928C2EE6C0005B5A2 /* AppDelegateKey.swift */; };
+		70F59B242F7F238000E4B1FD /* CustomContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F59B1C2F7F237700E4B1FD /* CustomContactViewController.swift */; };
+		70F59B252F7F238000E4B1FD /* CustomContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F59B1C2F7F237700E4B1FD /* CustomContactViewController.swift */; };
+		70F59B272F7F28D200E4B1FD /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F59B262F7F28CF00E4B1FD /* ImagePicker.swift */; };
+		70F59B282F7F28D200E4B1FD /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F59B262F7F28CF00E4B1FD /* ImagePicker.swift */; };
+		70F59B2B2F7F290700E4B1FD /* MyContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F59B2A2F7F290200E4B1FD /* MyContactView.swift */; };
+		70F59B2C2F7F290700E4B1FD /* MyContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F59B2A2F7F290200E4B1FD /* MyContactView.swift */; };
+		70F59B2E2F7F291800E4B1FD /* MyContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F59B2D2F7F290E00E4B1FD /* MyContactViewController.swift */; };
+		70F59B2F2F7F291800E4B1FD /* MyContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F59B2D2F7F290E00E4B1FD /* MyContactViewController.swift */; };
+		70F59B312F7F292B00E4B1FD /* ProfileImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F59B302F7F292600E4B1FD /* ProfileImageView.swift */; };
+		70F59B322F7F292B00E4B1FD /* ProfileImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F59B302F7F292600E4B1FD /* ProfileImageView.swift */; };
 		70F921A827CA9A3A00368CEC /* CustomStylerKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F921A727CA9A3A00368CEC /* CustomStylerKey.swift */; };
 		70F921A927CA9A4000368CEC /* CustomStylerKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F921A727CA9A3A00368CEC /* CustomStylerKey.swift */; };
 		70F921AC27CABE3000368CEC /* SessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F921AB27CABE3000368CEC /* SessionDelegate.swift */; };
@@ -407,6 +417,11 @@
 		70F03AA727860E7700E5AFB4 /* FontColorKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontColorKey.swift; sourceTree = "<group>"; };
 		70F0EFE728C2EC050005B5A2 /* OCKSampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCKSampleApp.swift; sourceTree = "<group>"; };
 		70F0EFE928C2EE6C0005B5A2 /* AppDelegateKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegateKey.swift; sourceTree = "<group>"; };
+		70F59B1C2F7F237700E4B1FD /* CustomContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomContactViewController.swift; sourceTree = "<group>"; };
+		70F59B262F7F28CF00E4B1FD /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		70F59B2A2F7F290200E4B1FD /* MyContactView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyContactView.swift; sourceTree = "<group>"; };
+		70F59B2D2F7F290E00E4B1FD /* MyContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyContactViewController.swift; sourceTree = "<group>"; };
+		70F59B302F7F292600E4B1FD /* ProfileImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageView.swift; sourceTree = "<group>"; };
 		70F921A727CA9A3A00368CEC /* CustomStylerKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomStylerKey.swift; sourceTree = "<group>"; };
 		70F921AB27CABE3000368CEC /* SessionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDelegate.swift; sourceTree = "<group>"; };
 		70F921AD27CABE7700368CEC /* RemoteSessionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSessionDelegate.swift; sourceTree = "<group>"; };
@@ -573,8 +588,11 @@
 		7030887C258272E700FFABB6 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				70F59B262F7F28CF00E4B1FD /* ImagePicker.swift */,
 				7036E4C8256E1A6F006E9A3C /* ProfileView.swift */,
+				70F59B302F7F292600E4B1FD /* ProfileImageView.swift */,
 				7036E516256F2413006E9A3C /* ProfileViewModel.swift */,
+				70F59B292F7F28F300E4B1FD /* MyContact */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -583,6 +601,7 @@
 			isa = PBXGroup;
 			children = (
 				7036E4CD256E9A0C006E9A3C /* ContactView.swift */,
+				70F59B1C2F7F237700E4B1FD /* CustomContactViewController.swift */,
 			);
 			path = Contact;
 			sourceTree = "<group>";
@@ -750,6 +769,15 @@
 				70E3422E2DB06281005124F9 /* NoHighlightStyle.swift */,
 			);
 			path = Modifiers;
+			sourceTree = "<group>";
+		};
+		70F59B292F7F28F300E4B1FD /* MyContact */ = {
+			isa = PBXGroup;
+			children = (
+				70F59B2A2F7F290200E4B1FD /* MyContactView.swift */,
+				70F59B2D2F7F290E00E4B1FD /* MyContactViewController.swift */,
+			);
+			path = MyContact;
 			sourceTree = "<group>";
 		};
 		70F921AA27CABDE900368CEC /* WatchConnectivity */ = {
@@ -1236,8 +1264,10 @@
 				707D29472DCBE68500980253 /* User.swift in Sources */,
 				7089F1BD2F510C970000DC33 /* CareKitCard.swift in Sources */,
 				70C2FF9F2F73419B00F8C6E3 /* Onboard.swift in Sources */,
+				70F59B252F7F238000E4B1FD /* CustomContactViewController.swift in Sources */,
 				707D29482DCBE68500980253 /* FontColorKey.swift in Sources */,
 				707D29492DCBE68500980253 /* MainView.swift in Sources */,
+				70F59B2E2F7F291800E4B1FD /* MyContactViewController.swift in Sources */,
 				707D294A2DCBE68500980253 /* CustomStylerKey.swift in Sources */,
 				707D294B2DCBE68500980253 /* TipView.swift in Sources */,
 				707D29712DCBE6A000980253 /* OCKLocalization.swift in Sources */,
@@ -1250,6 +1280,7 @@
 				707D29522DCBE68500980253 /* AppDelegateKey.swift in Sources */,
 				707D29532DCBE68500980253 /* Logger.swift in Sources */,
 				707D29542DCBE68500980253 /* TintColorFlipKey.swift in Sources */,
+				70F59B2B2F7F290700E4B1FD /* MyContactView.swift in Sources */,
 				707D29552DCBE68500980253 /* Installation.swift in Sources */,
 				709ECF842F60D3BD0022E100 /* CardEnabledEnvironmentKey.swift in Sources */,
 				7089F1C32F510CDD0000DC33 /* OCKTask+CareTask.swift in Sources */,
@@ -1277,8 +1308,10 @@
 				707D29642DCBE68500980253 /* CareViewController.swift in Sources */,
 				707D29652DCBE68500980253 /* PCKUtility.swift in Sources */,
 				707D29662DCBE68500980253 /* UserType.swift in Sources */,
+				70F59B322F7F292B00E4B1FD /* ProfileImageView.swift in Sources */,
 				70C2FF9D2F73415800F8C6E3 /* Survey.swift in Sources */,
 				7089F1CB2F510E290000DC33 /* CareKitTaskView.swift in Sources */,
+				70F59B282F7F28D200E4B1FD /* ImagePicker.swift in Sources */,
 				707D29672DCBE68500980253 /* ContactView.swift in Sources */,
 				707D29682DCBE68500980253 /* NoHighlightStyle.swift in Sources */,
 				70C2FFB82F73484F00F8C6E3 /* SurveyViewSynchronizer.swift in Sources */,
@@ -1368,6 +1401,7 @@
 				E7440E4F229477F7007AD30A /* CareViewController.swift in Sources */,
 				70C2FFA22F7341BF00F8C6E3 /* RangeOfMotion.swift in Sources */,
 				7089F1CA2F510E290000DC33 /* CareKitTaskView.swift in Sources */,
+				70F59B272F7F28D200E4B1FD /* ImagePicker.swift in Sources */,
 				70C2FFA02F73419B00F8C6E3 /* Onboard.swift in Sources */,
 				70C2FFA72F73435600F8C6E3 /* CarePlanID.swift in Sources */,
 				918FDEB5271B40590045A0EF /* Installation.swift in Sources */,
@@ -1391,6 +1425,7 @@
 				9169381B271B64E100A634ED /* Styler.swift in Sources */,
 				70F921A827CA9A3A00368CEC /* CustomStylerKey.swift in Sources */,
 				70221F3428D8ABBE00971195 /* AppDelegate+UIApplicationDelegate.swift in Sources */,
+				70F59B2C2F7F290700E4B1FD /* MyContactView.swift in Sources */,
 				9169381D271B650700A634ED /* ColorStyler.swift in Sources */,
 				E72B2C0A226939E3009A9438 /* AppDelegate.swift in Sources */,
 				7036E4C4256E0A48006E9A3C /* CareView.swift in Sources */,
@@ -1404,6 +1439,7 @@
 				70F0EFE828C2EC050005B5A2 /* OCKSampleApp.swift in Sources */,
 				918FDEB7271B41FF0045A0EF /* Logger.swift in Sources */,
 				70221F2A28D7BE0600971195 /* AppDelegate+ParseRemoteDelegate.swift in Sources */,
+				70F59B2F2F7F291800E4B1FD /* MyContactViewController.swift in Sources */,
 				7036E4D3256EBE35006E9A3C /* MainView.swift in Sources */,
 				70C2FFB42F7347F000F8C6E3 /* OCKAnyEvent+Custom.swift in Sources */,
 				70776EC22F47F3FB0002B901 /* OCKDimensionStyle.swift in Sources */,
@@ -1419,8 +1455,10 @@
 				7036E4C9256E1A6F006E9A3C /* ProfileView.swift in Sources */,
 				7083A856279CA40A00B3832E /* PCKUtility.swift in Sources */,
 				70B8E0A52F0EC1CA00440FCA /* Mutex.swift in Sources */,
+				70F59B242F7F238000E4B1FD /* CustomContactViewController.swift in Sources */,
 				70F921AE27CABE7700368CEC /* RemoteSessionDelegate.swift in Sources */,
 				7089F1C62F510D010000DC33 /* OCKHealthKitTask+Card.swift in Sources */,
+				70F59B312F7F292B00E4B1FD /* ProfileImageView.swift in Sources */,
 				70F03A952786093B00E5AFB4 /* OCKHealthKitPassthroughStore.swift in Sources */,
 				7089F1BE2F510C970000DC33 /* CareKitCard.swift in Sources */,
 				7036E4BF256DA089006E9A3C /* LoginViewModel.swift in Sources */,
