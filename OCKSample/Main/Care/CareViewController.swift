@@ -201,7 +201,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 			// Always call this method to ensure dates for
 			// queries are correct.
 			let date = modifyDateIfNeeded(date)
-			#if os(os)
+			#if os(iOS)
 			let isCurrentDay = isSameDay(as: date)
 
 			// Only show the tip view on the current date
@@ -216,6 +216,16 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 					tipView.imageView.image = UIImage(named: "exercise.jpg")
 					tipView.customStyle = CustomStylerKey.defaultValue
 					listViewController.appendView(tipView, animated: false)
+
+					// TODO: 5 - Need to use correct initializer instead of setting properties
+
+					let customFeaturedView = CustomFeaturedContentViewController()
+					customFeaturedView.url = URL(string: "https://dornsife.usc.edu/phed/")
+					customFeaturedView.imageView.image = UIImage(named: "exercise.jpg")
+					customFeaturedView.label.text = tipTitle
+					customFeaturedView.label.textColor = .white
+					customFeaturedView.customStyle = CustomStylerKey.defaultValue
+					listViewController.appendView(customFeaturedView, animated: false)
 				}
 			}
 			#endif
