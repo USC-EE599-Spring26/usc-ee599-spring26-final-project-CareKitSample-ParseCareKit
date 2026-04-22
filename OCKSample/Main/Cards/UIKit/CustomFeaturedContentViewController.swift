@@ -6,6 +6,8 @@
 //  Copyright © 2026 Network Reconnaissance Lab. All rights reserved.
 //
 
+#if os(iOS)
+
 import UIKit
 import CareKit
 import CareKitUI
@@ -51,3 +53,5 @@ extension CustomFeaturedContentViewController: @MainActor OCKFeaturedContentView
 		UIApplication.shared.open(url)
 	}
 }
+
+#endif
