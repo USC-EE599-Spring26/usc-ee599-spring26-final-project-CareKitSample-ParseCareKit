@@ -169,6 +169,8 @@
 		70C2FFB82F73484F00F8C6E3 /* SurveyViewSynchronizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C2FFB62F73484D00F8C6E3 /* SurveyViewSynchronizer.swift */; };
 		70CF66E428E1E74C00FAE977 /* TintColorFlipKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70CF66E328E1E74C00FAE977 /* TintColorFlipKey.swift */; };
 		70CF66E528E1E74C00FAE977 /* TintColorFlipKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70CF66E328E1E74C00FAE977 /* TintColorFlipKey.swift */; };
+		70D900EA2F98467100FE9B66 /* CustomFeaturedContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D900E22F98466F00FE9B66 /* CustomFeaturedContentViewController.swift */; };
+		70D900EB2F98467100FE9B66 /* CustomFeaturedContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D900E22F98466F00FE9B66 /* CustomFeaturedContentViewController.swift */; };
 		70DFD80B2567074500B9DB12 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70BD2B1E254B44DB0030B424 /* LoginView.swift */; };
 		70E342292DB05813005124F9 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70E342282DB05813005124F9 /* ProfileView.swift */; };
 		70E3422B2DB0581C005124F9 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70E3422A2DB0581C005124F9 /* MainTabView.swift */; };
@@ -408,6 +410,7 @@
 		70C2FFB12F7347E800F8C6E3 /* OCKAnyEvent+Custom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OCKAnyEvent+Custom.swift"; sourceTree = "<group>"; };
 		70C2FFB62F73484D00F8C6E3 /* SurveyViewSynchronizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyViewSynchronizer.swift; sourceTree = "<group>"; };
 		70CF66E328E1E74C00FAE977 /* TintColorFlipKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TintColorFlipKey.swift; sourceTree = "<group>"; };
+		70D900E22F98466F00FE9B66 /* CustomFeaturedContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomFeaturedContentViewController.swift; sourceTree = "<group>"; };
 		70E342282DB05813005124F9 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		70E3422A2DB0581C005124F9 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		70E3422E2DB06281005124F9 /* NoHighlightStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoHighlightStyle.swift; sourceTree = "<group>"; };
@@ -739,6 +742,7 @@
 		70C2FFB52F73483F00F8C6E3 /* UIKit */ = {
 			isa = PBXGroup;
 			children = (
+				70D900E22F98466F00FE9B66 /* CustomFeaturedContentViewController.swift */,
 				70C2FFB62F73484D00F8C6E3 /* SurveyViewSynchronizer.swift */,
 				E7C37848228F887800E982D8 /* TipView.swift */,
 			);
@@ -1320,6 +1324,7 @@
 				707D296A2DCBE68500980253 /* Constants.swift in Sources */,
 				707D296B2DCBE68500980253 /* AppDelegate+ParseRemoteDelegate.swift in Sources */,
 				707D296C2DCBE68500980253 /* RemoteSessionDelegate.swift in Sources */,
+				70D900EB2F98467100FE9B66 /* CustomFeaturedContentViewController.swift in Sources */,
 				70C2FF9A2F73413200F8C6E3 /* Surveyable.swift in Sources */,
 				707D296D2DCBE68500980253 /* OCKPatient+Parse.swift in Sources */,
 				70C2FFA62F73435600F8C6E3 /* CarePlanID.swift in Sources */,
@@ -1439,6 +1444,7 @@
 				70F0EFE828C2EC050005B5A2 /* OCKSampleApp.swift in Sources */,
 				918FDEB7271B41FF0045A0EF /* Logger.swift in Sources */,
 				70221F2A28D7BE0600971195 /* AppDelegate+ParseRemoteDelegate.swift in Sources */,
+				70D900EA2F98467100FE9B66 /* CustomFeaturedContentViewController.swift in Sources */,
 				70F59B2F2F7F291800E4B1FD /* MyContactViewController.swift in Sources */,
 				7036E4D3256EBE35006E9A3C /* MainView.swift in Sources */,
 				70C2FFB42F7347F000F8C6E3 /* OCKAnyEvent+Custom.swift in Sources */,
